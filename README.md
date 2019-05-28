@@ -1,6 +1,6 @@
 The Odin Project
 
-Object Orientated Programming
+Ruby - Object Orientated Programming
 
 Project 2: Mastermind
 
