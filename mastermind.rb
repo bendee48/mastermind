@@ -1,24 +1,22 @@
 require 'colorize'
 
 class Board
-  attr_accessor :board, :guess_row, :feedback_row, :colors
+  attr_accessor :board, :feedback_row, :colors
 
   def initialize
     @board = []
-    @guess_row = ["-", "-", "-", "-"]
     @feedback_row = ["-", "-", "-", "-"]
     @colors = {'r' => :red, 'g' => :green, 'y' => :yellow,
                'c' => :cyan, 'm' => :magenta, 'b' => :black
               }
   end
 
-  def add_to_board(guess, feedback)
-    board << [guess, feedback]
+  def add_to_board(guess_row, feedback)
+    board << guess_row << feedback
   end
 
-  def add_to_guess_row(guess)
-    guesses = guess.chars.map { |letter| '■'.colorize(colors[letter]) }    
-    guess_row.replace(guesses)
+  def return_guess_row(guess)
+    guess.chars.map { |letter| '■'.colorize(colors[letter]) }    
   end
 
   # def colors
@@ -41,23 +39,31 @@ class Player
     @score = 0
   end
 
-
-
 end
 
 class Game
+  attr_accessor :board
 
   def initialize
     @board = Board.new
   end
 
   def main_game
-    puts "type red, green, yellow, cyan magenta, black"
-    answer = gets.chomp
-    add_to_guess_row(answer)
-    add_to_board
+    loop do
+      puts "type red, green, yellow, cyan magenta, black"
+      answer = gets.chomp
+      guess = board.return_guess_row(answer)
+      board.add_to_board(guess, ["t", "t", "t", "t"])
+      board.display
+    end
   end
 
 end
 
-Board.new.add_to_guess_row("rgyc")
+Game.new.main_game
+# current_board = Board.new
+# guess = current_board.return_guess_row("rbym")
+# current_board.add_to_board(guess, ["t", "t", "t", "t"])
+# guess = current_board.return_guess_row("mbgy")
+# current_board.add_to_board(guess, ["x", "x", "x", "x"])
+# current_board.display
