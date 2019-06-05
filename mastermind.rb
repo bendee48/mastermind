@@ -21,10 +21,6 @@ class Board
     end    
   end
 
-  # def colors
-  #   [:red, :green, :yellow, :cyan, :magenta, :black].each { |color| puts '■'.colorize(color) }
-  # end
-
   def return_feedback(guess, code)
     black = 0
     white = 0
@@ -41,10 +37,16 @@ class Board
         end
       end
     end
-    convert_feedback([black, white])
+    feedback_to_string([black, white])
   end
 
-  def convert_feedback(feedback)
+  def display
+    board.each_slice(2) { |row| puts "%s %s %s %s | %s %s %s %s" % row.flatten }
+  end
+
+  private
+
+  def feedback_to_string(feedback)
     feedback_string = ""
     feedback_string << "b" * feedback[0]
     feedback_string << "w" * feedback[1]
@@ -52,10 +54,6 @@ class Board
       feedback_string << "-"
     end
     feedback_string
-  end
-
-  def display
-    board.each_slice(2) { |row| puts "%s %s %s %s | %s %s %s %s" % row.flatten }
   end
 
   #test
