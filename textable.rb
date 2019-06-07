@@ -3,8 +3,11 @@ module Textable
   def introduction
     puts "Welcome to Mastermind\n"\
          "Enter i for instructions or press return to continue."
-         answer = gets.chomp
-         instructions if answer == "i"
+    answer = gets.chomp
+    instructions if answer == "i"
+    puts "Would you like to be the guesser or the guessee? No wait...\n"\
+         "The coder or the codee? ...that's not right either...\n"\
+         "Ahem...sorry.\n"\
   end
 
   def instructions

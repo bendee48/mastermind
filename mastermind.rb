@@ -72,6 +72,9 @@ class Player
 
 end
 
+class Computer
+end
+
 class Game
 include Textable
 
@@ -79,7 +82,7 @@ include Textable
 
   def initialize
     @board = Board.new
-    @code = %w(r g y c m b).to_a.sample(4).join
+    @code 
   end
 
   def code_for_display
@@ -88,16 +91,29 @@ include Textable
 
   def game_start
     introduction
-    main_game
+    loop do
+      puts "Enter 1 to guess or 2 to set the code."
+      answer = gets.chomp
+      if answer == "1"
+        guess_game_loop
+        break
+      elsif answer == "2"
+        comp_game_loop
+        break
+      else
+        puts "I did not recognise that request."
+      end
+    end    
   end
 
-  def main_game
+  def guess_game_loop
     guess_number = 0
+    self.code = %w(r g y c m b).to_a.sample(4).join
 
     loop do
       puts "Make your selection (r)ed, (g)reen, (y)ellow, (c)yan, (m)agenta, (b)lack."
       answer = gets.chomp
-      (puts "That's an incorrect selection."; redo) if !guess_validated?(answer)
+      (puts "That's an incorrect selection."; redo) if !sequence_validated?(answer)
       guess = board.return_row(answer)
       feedback = board.return_row(board.return_feedback(guess, code_for_display))
       board.add_to_board(guess, feedback)
@@ -109,7 +125,35 @@ include Textable
     end
   end
 
-  def guess_validated?(guess)
+  def comp_game_loop
+    guess_number = 0
+
+    loop do
+      puts "Set your 4 colour code, (r)ed, (g)reen, (y)ellow, (c)yan, (m)agenta, (b)lack."
+      answer = gets.chomp
+      (puts "Invalid code selection."; redo) if !sequence_validated?(answer)
+      self.code = answer
+      p code
+      puts "Thanks."
+      loop do
+        puts "Computer is guessing..."; sleep(2)
+        guess = board.return_row(computer_guess)
+        feedback = board.return_row(board.return_feedback(guess, code_for_display))
+        board.add_to_board(guess, feedback)
+        board.display
+        (puts "Computer guesses right!"; break) if guess == code
+        guess_number += 1
+        (puts "The computer failed to guess your code :-) Game Over."; break) if guess_number > 11
+      end
+      break
+    end
+  end
+
+  def computer_guess
+    %w(r g y c m b).to_a.sample(4).join
+  end
+
+  def sequence_validated?(guess)
     guess.match?(/[rgycmb]{4}/) && guess.size == 4
   end
 
