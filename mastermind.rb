@@ -1,4 +1,5 @@
 require 'colorize'
+require './textable'
 
 class Board
   attr_accessor :board, :colors
@@ -56,10 +57,10 @@ class Board
     feedback_string
   end
 
-  #test
-  def color_test
-    String.colors.each { |color| puts '■'.colorize(color)  }
-  end
+  # #test
+  # def color_test
+  #   String.colors.each { |color| puts '■'.colorize(color)  }
+  # end
 
 end
 
@@ -72,30 +73,50 @@ class Player
 end
 
 class Game
-  attr_accessor :board
+include Textable
+
+  attr_accessor :board, :code
 
   def initialize
     @board = Board.new
+    @code = %w(r g y c m b).to_a.sample(4).join
   end
 
-  # code to guess in game class
+  def code_for_display
+    board.return_row(code)
+  end
+
+  def game_start
+    introduction
+    main_game
+  end
 
   def main_game
-    code = board.return_row("rgyb")
+    guess_number = 0
+
     loop do
-      puts "type red, green, yellow, cyan magenta, black"
+      puts "Make your selection (r)ed, (g)reen, (y)ellow, (c)yan, (m)agenta, (b)lack."
       answer = gets.chomp
+      (puts "That's an incorrect selection."; redo) if !guess_validated?(answer)
       guess = board.return_row(answer)
-      feedback = board.return_row(board.return_feedback(guess, code))
+      feedback = board.return_row(board.return_feedback(guess, code_for_display))
       board.add_to_board(guess, feedback)
       board.display
+      (puts "You win!"; break) if answer == code
+      guess_number += 1
+      (puts "You failed to guess the code :-( Game Over."; break) if guess_number > 11
+      p code
     end
+  end
+
+  def guess_validated?(guess)
+    guess.match?(/[rgycmb]{4}/) && guess.size == 4
   end
 
 end
 
 # p Board.new.convert_feedback([0,3])
-Game.new.main_game
+Game.new.game_start
 # current_board = Board.new
 # guess = current_board.return_guess_row("rbym")
 # current_board.add_to_board(guess, ["t", "t", "t", "t"])
