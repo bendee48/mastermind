@@ -161,6 +161,7 @@ include Textable
       puts "Set your 4 colour code, (r)ed, (g)reen, (y)ellow, (c)yan, (m)agenta, (b)lack."
       answer = gets.chomp.downcase
       (puts "Invalid code selection."; redo) if !sequence_validated?(answer)
+      (puts "Contains duplicates"; redo) if !sequence_duplicate_validated?(answer)
       self.code = answer
       p code
       puts "Thanks."
@@ -192,10 +193,18 @@ include Textable
     guess.match?(/[rgycmb]{4}/) && guess.size == 4
   end
 
+  def sequence_duplicate_validated?(code)
+    (duplicates == false && duplicates_present?(code)) ? false : true
+  end
+
+  def duplicates_present?(code)
+    code.chars.uniq != code.chars
+  end
+
 end
 
 # p Board.new.convert_feedback([0,3])
-Game.new.start_game
+Game.new.game_start
 # current_board = Board.new
 # guess = current_board.return_guess_row("rbym")
 # current_board.add_to_board(guess, ["t", "t", "t", "t"])
