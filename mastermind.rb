@@ -78,11 +78,12 @@ end
 class Game
 include Textable
 
-  attr_accessor :board, :code
+  attr_accessor :board, :code, :duplicates
 
   def initialize
     @board = Board.new
     @code 
+    @duplicates = false
   end
 
   def code_for_display
@@ -91,8 +92,13 @@ include Textable
 
   def game_start
     introduction
+    set_duplicates
+    select_game_loop
+  end
+
+  def select_game_loop
     loop do
-      puts "Enter 1 to guess or 2 to set the code."
+      puts "Select game mode. Enter (1) to guess a code or (2) to set the code."
       answer = gets.chomp
       if answer == "1"
         guess_game_loop
@@ -103,16 +109,39 @@ include Textable
       else
         puts "I did not recognise that request."
       end
-    end    
+    end
+  end
+
+  def set_duplicates
+    puts "Would you like to play with duplicates? Enter 'y' or 'n'."
+    answer = gets.chomp.downcase
+    if answer == 'y'  
+      puts "Thanks. Duplicates allowed."
+      self.duplicates = true
+    elsif answer == 'n'
+      puts "Thanks. No duplicates allowed."
+    else
+      puts "I'll take that as a no. No duplicates allowed." 
+    end
+  end
+
+  def set_code
+    if duplicates
+      code = ""
+      4.times { code << "rgcmyb"[rand(6)] }
+      self.code = code
+    else
+      self.code = %w(r g y c m b).to_a.sample(4).join
+    end
   end
 
   def guess_game_loop
     guess_number = 0
-    self.code = %w(r g y c m b).to_a.sample(4).join
+    set_code
 
     loop do
       puts "Make your selection (r)ed, (g)reen, (y)ellow, (c)yan, (m)agenta, (b)lack."
-      answer = gets.chomp
+      answer = gets.chomp.downcase
       (puts "That's an incorrect selection."; redo) if !sequence_validated?(answer)
       guess = board.return_row(answer)
       feedback = board.return_row(board.return_feedback(guess, code_for_display))
@@ -130,7 +159,7 @@ include Textable
 
     loop do
       puts "Set your 4 colour code, (r)ed, (g)reen, (y)ellow, (c)yan, (m)agenta, (b)lack."
-      answer = gets.chomp
+      answer = gets.chomp.downcase
       (puts "Invalid code selection."; redo) if !sequence_validated?(answer)
       self.code = answer
       p code
@@ -150,7 +179,13 @@ include Textable
   end
 
   def computer_guess
-    %w(r g y c m b).to_a.sample(4).join
+    if duplicates
+      code = ""
+      4.times { code << "rgcmyb"[rand(6)] }
+      code
+    else
+      %w(r g y c m b).to_a.sample(4).join
+    end
   end
 
   def sequence_validated?(guess)
@@ -160,7 +195,7 @@ include Textable
 end
 
 # p Board.new.convert_feedback([0,3])
-Game.new.game_start
+Game.new.start_game
 # current_board = Board.new
 # guess = current_board.return_guess_row("rbym")
 # current_board.add_to_board(guess, ["t", "t", "t", "t"])
