@@ -64,13 +64,13 @@ class Board
 
 end
 
-class Player
+# class Player
 
-  def initialize
-    @score = 0
-  end
+#   def initialize
+#     @score = 0
+#   end
 
-end
+# end
 
 class Computer
 end
@@ -161,7 +161,7 @@ include Textable
       puts "Set your 4 colour code, (r)ed, (g)reen, (y)ellow, (c)yan, (m)agenta, (b)lack."
       answer = gets.chomp.downcase
       (puts "Invalid code selection."; redo) if !sequence_validated?(answer)
-      (puts "Contains duplicates"; redo) if !sequence_duplicate_validated?(answer)
+      (puts "Duplicates are set to false. Select again."; redo) if !sequence_duplicate_validated?(answer)
       self.code = answer
       p code
       puts "Thanks."
@@ -188,6 +188,8 @@ include Textable
       %w(r g y c m b).to_a.sample(4).join
     end
   end
+
+  private
 
   def sequence_validated?(guess)
     guess.match?(/[rgycmb]{4}/) && guess.size == 4
