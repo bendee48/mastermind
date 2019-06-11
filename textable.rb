@@ -14,7 +14,7 @@ module Textable
     puts "Select a colour by using it's first letter eg. m = Magenta."; sleep 3
     puts "Select 4 colours to make a guess eg. 'rgyb' = Red, Green, Yellow, Black."; sleep 3
     puts "After guessing, the guess along with feedback will be shown."; sleep 3
-    puts "For every correct color within it's correct position, a black peg will be given."; sleep 5
+    puts "For every correct colour within it's correct position, a black peg will be given."; sleep 5
     puts "For every correct colour 'not' within it's correct position, a white peg will be given."; sleep 5
     puts "Example: A code of 'rgyb' and a guess of 'rymc' would return 1 black peg and 1 white peg."; sleep 5
     puts "If playing with duplicate colours, a feedback peg will be shown for every duplicate"; sleep 3
