@@ -87,7 +87,7 @@ class Game
         self.code = answer
         puts "Thanks."
         loop do
-          puts "Computer is guessing..."; sleep(5)
+          puts "Computer is guessing..."; sleep(3)
           string_guess = computer_guess(board.current_feedback)
           guess = board.return_row(string_guess)
           feedback = board.return_row(board.return_feedback(guess, code_for_display))
