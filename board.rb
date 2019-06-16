@@ -1,3 +1,5 @@
+require './color_string'
+
 class Board
   attr_accessor :board, :colors, :current_feedback
 
@@ -16,7 +18,7 @@ class Board
 
   def return_row(letters)
     letters.chars.map do |letter| 
-      colors.keys.include?(letter) ? '■'.colorize(colors[letter]) : '-'
+      colors.keys.include?(letter) ? '■'.send(colors[letter]) : '-'
     end    
   end
 
@@ -45,7 +47,7 @@ class Board
 
   def feedback_colors_hash
     colors_hash = {}
-    colors.each { |k, v| colors_hash['■'.colorize(v)] = k }
+    colors.each { |k,v| colors_hash['■'.send(colors[k])] = k }
     colors_hash
   end
 
