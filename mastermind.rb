@@ -2,7 +2,7 @@ require 'colorize'
 require './textable'
 
 class Board
-  attr_accessor :board, :colors
+  attr_accessor :board, :colors, :current_feedback
 
   def initialize
     @board = []
@@ -10,6 +10,7 @@ class Board
                'c' => :cyan, 'm' => :magenta, 'b' => :black,
                'w' => :white
               }
+    @current_feedback = []
   end
 
   def add_to_board(guess_row, feedback)
@@ -26,19 +27,29 @@ class Board
     black = 0
     white = 0
     used = []
+    current_feedback.clear
+
     guess.each.with_index do |guess_item, ind|
       if guess_item == code[ind]
         black += 1
+        current_feedback << feedback_colors_hash[guess_item]
       else
         code.each.with_index do |code_item, ind|
           if code_item == guess_item && (code_item != guess[ind] && !used.include?(code_item))
             white += 1
             used << code_item
+            current_feedback << feedback_colors_hash[guess_item]
           end
         end
       end
     end
     feedback_to_string([black, white])
+  end
+
+  def feedback_colors_hash
+    colors_hash = {}
+    colors.each { |k, v| colors_hash['■'.colorize(v)] = k }
+    colors_hash
   end
 
   def display
@@ -57,22 +68,6 @@ class Board
     feedback_string
   end
 
-  # #test
-  # def color_test
-  #   String.colors.each { |color| puts '■'.colorize(color)  }
-  # end
-
-end
-
-# class Player
-
-#   def initialize
-#     @score = 0
-#   end
-
-# end
-
-class Computer
 end
 
 class Game
@@ -150,7 +145,6 @@ include Textable
       (puts "You win!"; break) if answer == code
       guess_number += 1
       (puts "You failed to guess the code :-( Game Over."; break) if guess_number > 11
-      p code
     end
   end
 
@@ -163,15 +157,15 @@ include Textable
       (puts "Invalid code selection."; redo) if !sequence_validated?(answer)
       (puts "Duplicates are set to false. Select again."; redo) if !sequence_duplicate_validated?(answer)
       self.code = answer
-      p code
       puts "Thanks."
       loop do
-        puts "Computer is guessing..."; sleep(2)
-        guess = board.return_row(computer_guess)
+        puts "Computer is guessing..."; sleep(5)
+        string_guess = computer_guess(board.current_feedback)
+        guess = board.return_row(string_guess)
         feedback = board.return_row(board.return_feedback(guess, code_for_display))
         board.add_to_board(guess, feedback)
         board.display
-        (puts "Computer guesses right!"; break) if guess == code
+        (puts "Computer guesses right!"; break) if string_guess == code
         guess_number += 1
         (puts "The computer failed to guess your code :-) Game Over."; break) if guess_number > 11
       end
@@ -179,13 +173,25 @@ include Textable
     end
   end
 
-  def computer_guess
+  def computer_guess(colors_to_use)
+    colors = ["r", "g", "b", "y", "c", "m"]
     if duplicates
-      code = ""
-      4.times { code << "rgcmyb"[rand(6)] }
-      code
+      if colors_to_use.size == 4
+        code = ""
+        4.times { code << colors_to_use.join[rand(4)] }
+        code
+      else
+        (4 - colors_to_use.size).times { colors_to_use << colors[rand(6)] }
+        colors_to_use.join
+      end
     else
-      %w(r g y c m b).to_a.sample(4).join
+      if colors_to_use.size == 4
+        colors_to_use.sample(4).join
+      else
+        colors = colors - colors_to_use
+        colors_to_use << colors.sample(4 - colors_to_use.size)
+        colors_to_use.flatten.join
+      end
     end
   end
 
@@ -205,11 +211,5 @@ include Textable
 
 end
 
-# p Board.new.convert_feedback([0,3])
 Game.new.game_start
-# current_board = Board.new
-# guess = current_board.return_guess_row("rbym")
-# current_board.add_to_board(guess, ["t", "t", "t", "t"])
-# guess = current_board.return_guess_row("mbgy")
-# current_board.add_to_board(guess, ["x", "x", "x", "x"])
-# current_board.display
+
